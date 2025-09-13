@@ -1,11 +1,14 @@
 import express from 'express';
 import { connectDB } from './Config/dbConn';
+import userRoute from './Route/userRoute.js';
 
 const app = express();
 const port = 3000;
 
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
+
+app.use('/api',userRoute);
 
 connectDB();
 
