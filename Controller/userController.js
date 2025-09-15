@@ -133,7 +133,13 @@ export const showUsersById = async(req,res) => {
                 success: false,
                 message: "User not found"
             })
-        } 
+        } else{
+            return res.status(200).json({
+                success: true,
+                message: "User data fetched successfully",
+                user: showById
+            })
+        }
     }catch(error) {
         console.error(error.message);
         res.status(500).json({
