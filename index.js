@@ -1,5 +1,5 @@
 import express from 'express';
-import { connectDB } from './Config/dbConn';
+import { connectDB } from './Config/dbConn.js';
 import userRoute from './Route/userRoute.js';
 
 const app = express();
