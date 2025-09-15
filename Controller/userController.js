@@ -98,3 +98,28 @@ export const updateUsers = async(req, res) => {
         })
     }
 }
+
+export const deleteUsers = async(req,res) => {
+    try{
+        const {id} = req.params;
+        const deleteReq = await userModel.findByIdAndDelete(id);
+        if(!deleteReq){
+            return res.status(404).json({
+                success: false,
+                message: "User not found"
+            })
+        } else{
+            return res.status(200).json({
+                success: true,
+                message: "Successfully deleted",
+                user: deleteReq
+            })
+        }
+    }catch(error) {
+        console.error(error.message);
+        res.status(500).json({
+            success: false,
+            message: "Internal Server Error"
+        })
+    }
+}
