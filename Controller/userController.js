@@ -123,3 +123,22 @@ export const deleteUsers = async(req,res) => {
         })
     }
 }
+
+export const showUsersById = async(req,res) => {
+    try{
+        const {id} = req.params;
+        const showById = await userModel.findById(id);
+        if(!showById) {
+            return res.status(404).json({
+                success: false,
+                message: "User not found"
+            })
+        } 
+    }catch(error) {
+        console.error(error.message);
+        res.status(500).json({
+            success: false,
+            message: "Internal Server Error"
+        })
+    }
+}
