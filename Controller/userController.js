@@ -65,3 +65,36 @@ export const createNewUser = async(req,res) => {
         }
     }
 }
+
+export const updateUsers = async(req, res) => {
+    try{
+        const {id} = req.params;
+        const updateReqFormat = await zodValSchema.partial().parseAsync(req.body);
+        
+        if(updateReqFormat.password) {
+        let protectedPass = await hashing(updateReqFormat.password);
+        updateReqFormat.password = protectedPass
+        }
+        
+        const updateData = await userModel.findByIdAndUpdate(id,{
+            ...updateReqFormat
+        }, {new: true});
+        if(!updateData) {
+            return res.status(404).json({
+                success: false,
+                message: "No updates were made"
+            })
+        } else {
+            return res.status(200).json({
+                success: true,
+                message: "Data updated successfully",
+                user: updateData
+            })
+        }
+    } catch(error) {
+        res.status(500).json({
+            success: false,
+            message: "Internal Server Error"
+        })
+    }
+}
