@@ -1,7 +1,9 @@
 import { userModel } from "../Model/userModel.js";
 import { zodValSchema } from "../Validation/zodSchema.js";
 import { hashing } from "../Validation/hashingPassW.js";
-import { ZodError } from "zod";
+import { email, ZodError } from "zod";
+import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
 
 export const registerAUser = async(req,res) => {
     try{
@@ -48,5 +50,52 @@ export const registerAUser = async(req,res) => {
             message: "Internal Server Error"
         })
     }
+    }
+}
+
+export const loginUser = async(req,res) => {
+    try{
+        const logInFormat = await zodValSchema.parseAsync(req.body);
+        const checkExistence = await userModel.findOne({
+            email: logInFormat.email
+        })
+        if(!checkExistence) {
+            return res.status(404).json({
+                success: false,
+                message: "No user found"
+            })
+        }
+        const checkPasswordValidity = await bcrypt.compare(logInFormat.password, checkExistence.password);
+        if(!checkPasswordValidity) {
+            return res.status(404).json({
+                success: false,
+                message: "Invalid Password, Retry!"
+            })
+        }
+        const{password, ...withoutPassword} = checkExistence.toObject();
+        const token = jwt.sign({
+            id: checkExistence._id,
+            email: checkExistence.email
+        }, process.env.JWT_Secret,
+      {expiresIn: "1h"});
+      if(!token) {
+         return res.status(400).json({
+            success: false,
+            message: "No token found"
+        })
+      } else {
+         return res.status(200).json({
+            success: true,
+            message: "Loggedin Successfully",
+            user: withoutPassword,
+            token: token
+        })
+      }
+    } catch(error) {
+         console.error(error.message);
+       return res.status(500).json({
+            success: false,
+            message: "Internal Server Error"
+        })
     }
 }
