@@ -25,18 +25,13 @@ export const registerAUser = async(req,res) => {
             password: secureNewPassword
         })
         const{password, ...userWithoutPassword} = newRegisteredUser.toObject();
-        if(!newRegisteredUser) {
-           return res.status(500).json({
-                success: false,
-                message: "Registration request failed"
-            })
-        } else {
-            return res.status(201).json({
+        
+        return res.status(201).json({
                 success: true,
                 message: "Registration complete!",
                 user: userWithoutPassword
             })
-        }
+        
     }catch(error) {
         if (error instanceof ZodError) {
             return res.status(400).json({
@@ -93,6 +88,31 @@ export const loginUser = async(req,res) => {
         })
       }
     } catch(error) {
+         console.error(error.message);
+       return res.status(500).json({
+            success: false,
+            message: "Internal Server Error"
+        })
+    }
+}
+
+export const userProfile = async(req,res) => {
+    try{
+        const profileAccessReq = await userModel.findById(req.user.id).select("-password");
+        if(!profileAccessReq) {
+            return res.status(401).json({
+                 success: false,
+                 message: "No data found"
+            })
+        } else{
+             return res.status(200).json({
+                 success: true,
+                 message: "Data Access Granted",
+                 data: profileAccessReq
+            })
+        }
+
+    }catch(error) {
          console.error(error.message);
        return res.status(500).json({
             success: false,
