@@ -1,9 +1,10 @@
 import { userModel } from "../Model/userModel.js";
 import { zodValSchema } from "../Validation/zodSchema.js";
 import { hashing } from "../Validation/hashingPassW.js";
-import { email, ZodError } from "zod";
+import { ZodError } from "zod";
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
+import { authMiddleware } from "../Middleware/authMiddleware.js";
 
 export const registerAUser = async(req,res) => {
     try{
